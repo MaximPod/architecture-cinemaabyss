@@ -1,0 +1,17 @@
+logger:
+    debug_on: false
+    handler_format: json
+    set_as_default_logger: true
+http_server:
+    scheme: http
+    host: localhost
+    port: 8082
+swagger:
+    enable: true
+    host: localhost
+    port: 8082
+    endpoint: "/docs"
+pubsub:
+    transport_type: kafka # gochannel, kafka
+    kafka:
+        brokers: "kafka:9092"

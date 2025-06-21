@@ -82,23 +82,6 @@ services:
     networks:
       - cinemaabyss-network
 
-  # Events Microservice
-  events-service:
-    build:
-      context: ./src/microservices/events
-      dockerfile: Dockerfile
-    container_name: cinemaabyss-events-service
-    depends_on:
-      - postgres
-      - kafka
-    ports:
-      - "8082:8082"
-    environment:
-      PORT: 8082
-      KAFKA_BROKERS: kafka:9092
-    networks:
-      - cinemaabyss-network
-
   # Proxy Service (API Gateway)
   proxy-service:
     build:
@@ -118,6 +101,25 @@ services:
       EVENTS_SERVICE_URL: http://events-service:8082
       GRADUAL_MIGRATION: "true"
       MOVIES_MIGRATION_PERCENT: "50"
+    networks:
+      - cinemaabyss-network
+      
+  # Events Microservice
+  events-service:
+    build:
+      context: ./src/microservices/events
+      dockerfile: Dockerfile
+    container_name: cinemaabyss-events-service
+    restart: always
+    depends_on:
+      - postgres
+      - kafka
+      - kafka-ui
+    ports:
+      - "8082:8082"
+    environment:
+      PORT: 8082
+      KAFKA_BROKERS: kafka:9092
     networks:
       - cinemaabyss-network
 
