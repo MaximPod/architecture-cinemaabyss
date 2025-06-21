@@ -1,0 +1,50 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LANDSCAPE()
+
+title Контейнерная диаграмма для контекста Cinemaabyss
+
+Person(customer, "Пользователи")
+
+System_Boundary(c1, "Cinemaabyss") {
+  
+    Container(proxy, "proxy-service", "Go", "Api Gateway")
+    Container(monolith, "Legacy Monolith", "Go", "Легаси Монолит")
+    Container(movie, "Movie service", "Go", "Сервис фильмов")
+    ContainerDb(db, "Database", "Postgresql", "Общее хранилище")
+    Container(events, "events-service", "Go", "Сервис событий")
+} 
+
+
+System_Boundary(c2, "Infrastructura") {
+    Container(nginx, "nginx", "", "Web Service")
+    Container(message_bus, "Event Bus", "Kafka", "Шина событий")
+} 
+
+System_Ext(ps, "Платежная система", "Внешний сервис оплаты")
+System_Ext(oc, "Онлайн кинотеатры", "")
+System_Ext(rs, "Рекомендательная система", "Внешний сервис оплаты")
+
+Lay_D(monolith, db)
+Lay_L(rs, ps)
+
+Rel(customer, nginx, "Ноутбуки, мобилки, тв", "")
+Rel(nginx, proxy, "Backend API", "")
+Rel(nginx, events, "Events API", "")
+
+BiRel(events, message_bus, "Kafka", "")
+
+Rel(proxy, monolith, "Legacy way", "")
+Rel(proxy, movie, "New way", "")
+
+Rel_D(monolith, ps, "Legacy way", "")
+Rel_D(monolith, rs, "RMQP", "")
+Rel_D(monolith, oc, "Legacy way", "")
+Rel_D(monolith, db, "Legacy way", "")
+
+Rel(movie, db, "New way", "")
+Rel(movie, oc, "New way", "")
+
+
+@enduml
