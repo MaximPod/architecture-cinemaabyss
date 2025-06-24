@@ -1,0 +1,36 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Контейнерная диаграмма для контекста Core
+
+System_Boundary(c1, "Core") {
+
+    Container(movie, "Movie service", "Go", "Сервис фильмов")
+    ContainerDb(db, "Database", "Postgresql", "DB Movie")
+    Container(videosources, "Сервисы интеграции с источниками контента", "")
+    Container(provider, "Сервис управления провайдерами видеохостинга", "")
+    ContainerDb(dbp, "Database", "Postgresql", "DB Providers")
+} 
+
+
+System_Boundary(c2, "Infrastructura") {
+    Container(message_bus, "Event Bus", "Kafka", "Шины комманд и событий")
+} 
+
+System_Ext(rs, "Рекомендательная система", "Внешний сервис оплаты")
+System_Ext(vh, "video hosting", "Стримминговый сервис или др источник видеоконтента")
+
+
+Lay_D(videosources, provider)
+
+Rel_D(message_bus, movie, "Pub/Sub", "")
+Rel_D(movie, db, "", "")
+Rel_D(movie, videosources, "REST", "")
+Rel_R(movie, rs, "RMQP", "")
+Rel_R(videosources, vh, "Provider API", "")
+Rel_R(provider, vh, "Provider API", "")
+Rel_D(videosources, provider, "REST", "")
+Rel_D(provider, dbp, "", "")
+
+
+@enduml

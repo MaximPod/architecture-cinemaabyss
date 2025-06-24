@@ -1,0 +1,69 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+
+Person(customer, "Пользователи", "Web, Mobile, TV")
+
+Enterprise_Boundary(c0, "Кинобездна") {
+ System(guard, "Guard", "Безопасность, балансировка")
+ System(bff, "BFF pool", "Выдача фронтов на устройство клиента")
+ System(core, "Core", "Домен работы с фильмотекой")
+' System(videosources, "Система интеграции с источниками контента", "")
+' System(provider, "Система управления взаиморасчетами с провайдерами видеохостинга", "")
+ System(users, "Система управления пользователями", "")
+ System(billing, "Система управления взаиморасчетами с клиентами", "")
+ 
+ System(infra, "инфраструктурный домен", "")
+ System(communicate, "Система служебной коммуникации", "")
+ System(support, "Система службы поддержки пользователей", "")
+ System(market, "Система отдела продаж", "")
+ System(analytic, "Система аналитики", "")
+ System(account, "Система бухгалтерского учета", "")
+ System(notification, "Система уведомлений", "Сообщения пользователям: смс, мессенджеры, почта")
+
+}
+
+System_Ext(rc, "recommendation system","Внешняя рекомендательная система")
+System_Ext(vh, "video hosting", "Стримминговый сервис или др источник видеоконтента")
+System_Ext(cdn, "CDN", "CDN стримингового сервиса")
+System_Ext(payments, "Внешние сервисы платежей", "")
+System_Ext(message_system, "Внешние сервисы уведомлений", "Почта, СМС, Мессенджеры")
+
+
+
+Lay_D(bff, infra)
+'Lay_R(videosources, provider)
+
+Rel_R(customer, cdn, "videocontent", "")
+Rel_D(customer, guard, "Web, Mobile, TV", "")
+Rel_D(guard, bff, "Web, Mobile, TV", "")
+BiRel_D(bff, infra, "", "")
+
+BiRel_D(infra, core, "", "")
+BiRel_D(infra, users, "", "")
+BiRel_D(infra, billing, "", "")
+Rel_D(billing, payments, "", "")
+
+Rel_D(core, vh, "", "")
+'Rel_D(videosources, vh, "", "")
+Rel(core, rc, "", "")
+
+'Lay_D(movie, provider)
+'Rel_D(provider, vh, "", "")
+
+Lay_D(core, support)
+Lay_D(core, market)
+Lay_D(core, analytic)
+Lay_D(core, account)
+Lay_D(core, communicate)
+Lay_D(core, notification)
+
+
+BiRel_D(infra, market,  "", "")
+BiRel_D(infra, support,  "", "")
+BiRel_D(infra, analytic,  "", "")
+Rel_D(infra, account,"", "")
+BiRel_D(infra, communicate, "", "")
+BiRel_D(infra, notification, "", "")
+Rel_D(notification, message_system, "", "")
+@enduml
